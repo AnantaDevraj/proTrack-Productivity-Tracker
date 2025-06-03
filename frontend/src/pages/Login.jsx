@@ -18,6 +18,7 @@ const Login = () => {
       // Store token
       localStorage.setItem('token', data.token);
       // Optionally store user info
+      localStorage.setItem('authToken', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
     } catch (err) {
