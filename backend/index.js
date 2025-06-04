@@ -8,6 +8,7 @@ import connectDB from './model/db.js';
 // ✅ Import Routes
 import authRoutes from './routes/authRoutes.js';
 import taskRoutes from './routes/taskRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 // ✅ Import Middleware
 import auth from './middleware/auth.js';
@@ -32,6 +33,7 @@ app.use('/api/auth', authRoutes);
 
 // ✅ Protected Routes
 app.use('/api/tasks', taskRoutes);
+app.use('/api/users', userRoutes);
 
 // ✅ Sample Protected Test Route
 app.get('/api/profile', auth, (req, res) => {

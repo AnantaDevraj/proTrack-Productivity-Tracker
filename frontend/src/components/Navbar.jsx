@@ -2,10 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem('token');
+  const isLoggedIn = !!localStorage.getItem('authToken');
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     navigate('/login');
   };
 
@@ -19,7 +19,13 @@ const Navbar = () => {
         {isLoggedIn ? (
           <>
             <Link to="/dashboard" className="hover:underline">Dashboard</Link>
-            <button onClick={handleLogout} className="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-200">Logout</button>
+            <Link to="/profile" className="hover:underline">👤 Profile</Link>
+            <button 
+              onClick={handleLogout} 
+              className="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-200 transition-colors"
+            >
+              Logout
+            </button>
           </>
         ) : (
           <>

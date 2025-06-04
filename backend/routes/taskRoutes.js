@@ -30,6 +30,6 @@ router.put('/:id', updateTask);
 router.delete('/:id', deleteTask);
 
 // ✅ Toggle milestone completion
-router.put('/:taskId/milestones/:index/toggle', auth, toggleMilestone);
+router.put('/:taskId/milestones/:index/toggle', toggleMilestone);
 
 export default router;
