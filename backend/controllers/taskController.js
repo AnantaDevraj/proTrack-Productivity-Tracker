@@ -2,16 +2,39 @@
 import Task from "../model/taskModel.js";
 
 //CREATE
-export const createTask = async(req , res) => {
-    try {
-        const task = await Task.create({...req.body , userId: req.user.id});
-        res.status(201).json(task);
-    }catch(err){
-        res.status(400).json({msg : err.message});
+export const createTask = async (req, res) => {
+  try {
+    const { startDate } = req.body;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // reset time to start of day
+
+    if (new Date(startDate) < today) {
+      return res.status(400).json({ msg: "Start date cannot be before today" });
     }
+
+    const task = await Task.create({ ...req.body, userId: req.user.id });
+    res.status(201).json(task);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
 };
 
-//GET
+//GET SINGLE TASK
+export const getTaskById = async (req, res) => {
+  try {
+    const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
+    
+    if (!task) {
+      return res.status(404).json({ msg: "Task not found or not authorized" });
+    }
+    
+    res.status(200).json(task);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
+//GET ALL TASKS
 export const getTasks = async(req , res) =>{
     try{
         const tasks = await Task.find({userId: req.user.id});
@@ -24,19 +47,37 @@ export const getTasks = async(req , res) =>{
 //UPDATE
 export const updateTask = async (req, res) => {
   try {
-    const updated = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
-      req.body,
-      { new: true }
-    );
+    const task = await Task.findOne({ _id: req.params.id, userId: req.user.id });
 
-    if (!updated) return res.status(404).json({ msg: "Task not found or not authorized" });
+    if (!task) {
+      return res.status(404).json({ msg: "Task not found or not authorized" });
+    }
 
-    res.json(updated);
+    // Manually update allowed fields
+    task.title = req.body.title ?? task.title;
+    task.description = req.body.description ?? task.description;
+    task.startDate = req.body.startDate ?? task.startDate;
+    task.endDate = req.body.endDate ?? task.endDate;
+    task.goalForToday = req.body.goalForToday ?? task.goalForToday;
+    task.milestones = req.body.milestones ?? task.milestones;
+
+    if (
+      Array.isArray(task.milestones) &&
+      task.milestones.length > 0 &&
+      task.milestones.every(m => m.done)
+    ) {
+      task.completedAt = new Date();
+    } else {
+      task.completedAt = null;
+    }
+
+    const updatedTask = await task.save();
+    res.json(updatedTask);
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
 };
+
 
 //DELETE
 export const deleteTask = async (req, res) => {
@@ -96,4 +137,32 @@ export const toggleMilestone = async (req, res) => {
   }
 };
 
+//CREATE STATS
+export const getWeeklyStats = async (req, res) => {
+  try {
+    const tasks = await Task.find({ userId: req.user.id });
 
+    const weeklyStats = {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+      Saturday: [],
+      Sunday: [],
+    };
+
+    tasks.forEach(task => {
+      if (task.completedAt) {
+        const day = new Date(task.completedAt).toLocaleString("en-US", { weekday: "long" });
+        if (weeklyStats[day] !== undefined) {
+          weeklyStats[day].push({ title: task.title, date: task.completedAt });
+        }
+      }
+    });
+
+    res.json(weeklyStats);
+  } catch (err) {
+    res.status(500).json({ msg: "Failed to fetch weekly stats" });
+  }
+};

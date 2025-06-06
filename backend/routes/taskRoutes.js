@@ -2,10 +2,12 @@ import express from 'express';
 import {
   createTask,
   getTasks,
+  getTaskById,
   getTodayGoals,
   updateTask,
   deleteTask,
-  toggleMilestone // ✅ added here
+  toggleMilestone,
+  getWeeklyStats
 } from '../controllers/taskController.js';
 import auth from '../middleware/auth.js';
 
@@ -22,6 +24,12 @@ router.get('/', getTasks);
 
 // ✅ Get only today's goal tasks
 router.get('/today', getTodayGoals);
+
+// ✅ Weekly Stats
+router.get('/weekly-stats', getWeeklyStats);
+
+// ✅ Get a single task by ID
+router.get('/:id', getTaskById);
 
 // ✅ Update a task by ID
 router.put('/:id', updateTask);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -46,6 +47,33 @@ const Profile = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Upload to Cloudinary
+  const handlePhotoChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "protrack_upload"); // preset
+  formData.append("folder", "protrack/profile_pics");  // optional (already set by preset)
+  try {
+    const res = await fetch("https://api.cloudinary.com/v1_1/ddzkkeqmc/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    if (data.secure_url) {
+      setForm((prev) => ({ ...prev, profilePic: data.secure_url }));
+      toast.success("Image uploaded successfully!");
+    } else {
+      toast.error("Failed to upload image");
+    }
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    toast.error("Upload failed");
+  }
+};
+
   // Save Changes
   const handleSave = async () => {
     try {
@@ -69,10 +97,10 @@ const Profile = () => {
   };
 
   // Logout
-  const logout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-  };
+  // const logout = () => {
+  //   localStorage.removeItem("authToken");
+  //   navigate("/");
+  // };
 
   useEffect(() => {
     fetchProfile();
@@ -89,7 +117,10 @@ const Profile = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <strong className="font-bold">Error! </strong>
           <span className="block sm:inline">{error}</span>
         </div>
@@ -115,11 +146,10 @@ const Profile = () => {
                 />
                 {editing && (
                   <input
-                    name="profilePic"
-                    value={form.profilePic || ""}
-                    onChange={handleChange}
-                    className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Profile picture URL"
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="mt-2 w-full"
                   />
                 )}
               </div>
@@ -136,7 +166,9 @@ const Profile = () => {
                   </div>
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="text-sm text-gray-500">Contact</p>
-                    <p className="text-lg font-semibold">{user.contact || "Not provided"}</p>
+                    <p className="text-lg font-semibold">
+                      {user.contact || "Not provided"}
+                    </p>
                   </div>
 
                   <div className="flex justify-center space-x-4 pt-4">
@@ -157,7 +189,9 @@ const Profile = () => {
               ) : (
                 <div className="w-full space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Name
+                    </label>
                     <input
                       name="name"
                       value={form.name || ""}
@@ -166,7 +200,9 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
                     <input
                       name="email"
                       value={form.email || ""}
@@ -175,7 +211,9 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Contact</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Contact
+                    </label>
                     <input
                       name="contact"
                       value={form.contact || ""}
