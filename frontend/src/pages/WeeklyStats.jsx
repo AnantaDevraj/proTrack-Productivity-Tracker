@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../config/api";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -32,7 +33,7 @@ const WeeklyStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/weekly-stats", {
+        const res = await axios.get(API_ENDPOINTS.WEEKLY_STATS, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

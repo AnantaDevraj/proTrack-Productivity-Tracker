@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../config/api";
 
 const CreateTask = () => {
   const [form, setForm] = useState({
@@ -74,7 +75,7 @@ const CreateTask = () => {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/tasks", payload, {
+      await axios.post(API_ENDPOINTS.TASKS, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

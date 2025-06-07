@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import TodayGoals from "../components/TodayGoals";
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../config/api";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -12,7 +13,7 @@ const Dashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/tasks", {
+      const res = await axios.get(API_ENDPOINTS.TASKS, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(res.data || []); // Ensure we always set an array
@@ -32,7 +33,7 @@ const Dashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${id}`, {
+      await axios.delete(API_ENDPOINTS.TASK_BY_ID(id), {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Task deleted successfully");
@@ -49,7 +50,7 @@ const Dashboard = () => {
   const handleToggleMilestone = async (taskId, milestoneIndex) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/tasks/${taskId}/milestones/${milestoneIndex}/toggle`,
+        API_ENDPOINTS.TOGGLE_MILESTONE(taskId, milestoneIndex),
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

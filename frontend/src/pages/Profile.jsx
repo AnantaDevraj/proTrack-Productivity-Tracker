@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../config/api";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -23,7 +24,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/users/profile", {
+      const res = await axios.get(API_ENDPOINTS.PROFILE, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
@@ -79,7 +80,7 @@ const Profile = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        "http://localhost:5000/api/users/profile",
+        API_ENDPOINTS.PROFILE,
         form,
         {
           headers: { Authorization: `Bearer ${token}` },
