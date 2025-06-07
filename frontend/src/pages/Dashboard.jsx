@@ -15,13 +15,14 @@ const Dashboard = () => {
       const res = await axios.get("http://localhost:5000/api/tasks", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setTasks(res.data);
+      setTasks(res.data || []); // Ensure we always set an array
     } catch (err) {
       toast.error("Failed to fetch tasks");
       console.error(
         "Failed to fetch tasks:",
         err.response?.data?.msg || err.message
       );
+      setTasks([]); // Set empty array on error
     }
   };
 

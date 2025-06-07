@@ -1,6 +1,7 @@
-const TodayGoals = ({ tasks }) => {
-  const todayGoals = tasks.filter(t => t.goalForToday);
+const TodayGoals = ({ tasks = [] }) => {
+  const todayGoals = Array.isArray(tasks) ? tasks.filter(t => t.goalForToday) : [];
   const completed = todayGoals.filter(t =>
+    t.milestones && Array.isArray(t.milestones) &&
     t.milestones.length > 0 &&
     t.milestones.every(m => m.done)
   );
